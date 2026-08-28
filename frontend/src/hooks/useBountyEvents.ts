@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { subscribeToBountyEvents } from "@/lib/events";
 import type { BountyEvent } from "@/types/bounty";
 
-const MAX_FEED_LENGTH = 30;
+const MAX_FEED_LENGTH = 10;
 
 /**
  * Subscribes to the live activity feed for as long as the calling component

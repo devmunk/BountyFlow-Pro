@@ -1,9 +1,10 @@
-import { rpc as SorobanRpc, scValToNative, xdr } from "@stellar/stellar-sdk";
+import { rpc as SorobanRpc, scValToNative, Address, xdr } from "@stellar/stellar-sdk";
 import { getServer } from "./soroban";
 import type { BountyEvent, BountyEventKind } from "@/types/bounty";
 
 const FACTORY_ID = process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ID!;
 const INITIAL_LEDGER_LOOKBACK = 1000;
+const MAX_RPC_CONTRACT_IDS = 5;
 
 const TOPIC_TO_KIND: Record<string, BountyEventKind> = {
   // Factory / Creation
@@ -47,20 +48,28 @@ export interface EventSubscription {
   stop: () => void;
 }
 
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
 export function subscribeToBountyEvents(opts: EventSubscriptionOptions): EventSubscription {
   const { contractIds = [], intervalMs = 6000, onEvent, onError } = opts;
 
-  // Ensure valid Soroban contract C... addresses
   const validIds = [FACTORY_ID, ...contractIds].filter(
     (id): id is string => typeof id === "string" && id.startsWith("C") && id.length === 56,
   );
 
   const watched = Array.from(new Set(validIds));
   const seen = new Set<string>();
+  const chunkCursors = new Map<string, string>();
+  
   let stopped = false;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let cursorLedger: number | null = null;
-  let eventCursor: string | null = null;
 
   async function poll() {
     if (stopped || watched.length === 0) return;
@@ -72,61 +81,78 @@ export function subscribeToBountyEvents(opts: EventSubscriptionOptions): EventSu
         cursorLedger = Math.max(latest.sequence - INITIAL_LEDGER_LOOKBACK, 1);
       }
 
-      const filters: SorobanRpc.Api.EventFilter[] = [
-        {
-          type: "contract",
-          contractIds: watched,
-        },
-      ];
+      const chunks = chunkArray(watched, MAX_RPC_CONTRACT_IDS);
 
-      const response = await (eventCursor
-        ? server.getEvents({ cursor: eventCursor, filters, limit: 100 })
-        : server.getEvents({ startLedger: cursorLedger!, filters, limit: 100 }));
+      await Promise.all(
+        chunks.map(async (chunk) => {
+          const chunkKey = chunk.join(",");
+          const existingCursor = chunkCursors.get(chunkKey);
 
-      for (const raw of response.events) {
-        const id = `${raw.ledger}:${raw.id}`;
-        if (seen.has(id)) continue;
+          const filters: SorobanRpc.Api.EventFilter[] = [
+            {
+              type: "contract",
+              contractIds: chunk,
+            },
+          ];
 
-        const topicSymbol = safeTopicName(raw.topic);
-        let kind: BountyEventKind | undefined = topicSymbol ? TOPIC_TO_KIND[topicSymbol] : undefined;
+          try {
+            const response = await (existingCursor
+              ? server.getEvents({ cursor: existingCursor, filters, limit: 100 })
+              : server.getEvents({ startLedger: cursorLedger!, filters, limit: 100 }));
 
-        if (!kind && topicSymbol) {
-          const lower = topicSymbol.toLowerCase();
-          if (lower.includes("create") || lower.includes("register")) kind = "created";
-          else if (lower.includes("fund")) kind = "funded";
-          else if (lower.includes("claim")) kind = "claimed";
-          else if (lower.includes("submit")) kind = "submitted";
-          else if (lower.includes("approve")) kind = "approved";
-          else if (lower.includes("release")) kind = "released";
-          else if (lower.includes("refund")) kind = "refunded";
-        }
+            if (response.cursor) {
+              chunkCursors.set(chunkKey, response.cursor);
+            }
 
-        if (!kind) continue;
-        seen.add(id);
+            for (const raw of response.events) {
+              const id = `${raw.ledger}:${raw.id}`;
+              if (seen.has(id)) continue;
 
-        const data = safeEventData(raw.value);
-        
-        // Extract raw contract ID or topic address robustly
-        const rawContract = typeof raw.contractId === "string" ? raw.contractId : String(raw.contractId ?? "");
-        const topicAddress = raw.topic && raw.topic.length > 1 ? safeAddressTopic(raw.topic[1]) : null;
+              const topicSymbol = safeTopicName(raw.topic);
+              let kind: BountyEventKind | undefined = topicSymbol ? TOPIC_TO_KIND[topicSymbol] : undefined;
 
-        const bountyAddress = data.bounty_address ?? topicAddress ?? rawContract;
+              if (!kind && topicSymbol) {
+                const lower = topicSymbol.toLowerCase();
+                if (lower.includes("create") || lower.includes("register")) kind = "created";
+                else if (lower.includes("fund")) kind = "funded";
+                else if (lower.includes("claim")) kind = "claimed";
+                else if (lower.includes("submit")) kind = "submitted";
+                else if (lower.includes("approve")) kind = "approved";
+                else if (lower.includes("release")) kind = "released";
+                else if (lower.includes("refund")) kind = "refunded";
+              }
 
-        onEvent({
-          id,
-          kind,
-          bountyAddress,
-          ledger: raw.ledger,
-          timestamp: raw.ledgerClosedAt ? Date.parse(raw.ledgerClosedAt) / 1000 : 0,
-          data,
-        });
-      }
+              if (!kind) continue;
+              seen.add(id);
 
-      if (seen.size > 2000) {
+              const data = safeEventData(raw.value);
+              const rawContract = typeof raw.contractId === "string" ? raw.contractId : String(raw.contractId ?? "");
+              const topicAddress = raw.topic && raw.topic.length > 1 ? safeAddressTopic(raw.topic[1]) : null;
+
+              const bountyAddress = data.bounty_address ?? topicAddress ?? rawContract;
+
+              onEvent({
+                id,
+                kind,
+                bountyAddress,
+                ledger: raw.ledger,
+                timestamp: raw.ledgerClosedAt ? Date.parse(raw.ledgerClosedAt) / 1000 : 0,
+                data,
+              });
+            }
+          } catch (chunkErr) {
+            onError?.(
+              chunkErr instanceof Error
+                ? chunkErr.message
+                : `Event query error for chunk [${chunkKey}]`
+            );
+          }
+        })
+      );
+
+      if (seen.size > 5000) {
         seen.clear();
       }
-
-      eventCursor = response.cursor;
     } catch (err) {
       onError?.(err instanceof Error ? err.message : "Event stream error");
     } finally {
@@ -162,6 +188,10 @@ function safeTopicName(topics: unknown[]): string | null {
     if (typeof native === "string") return native;
     if (typeof native === "symbol") return String(native.description || native);
     if (typeof native === "object" && native !== null) {
+      if ("toString" in native && typeof native.toString === "function") {
+        const str = native.toString();
+        if (str && str !== "[object Object]") return str;
+      }
       const keys = Object.keys(native);
       return keys.length > 0 && keys[0] ? keys[0] : null;
     }
@@ -181,9 +211,16 @@ function safeAddressTopic(topic: unknown): string | null {
       valScVal = topic as xdr.ScVal;
     }
 
-    const value = scValToNative(valScVal);
-    const address = typeof value === "string" ? value : String(value ?? "");
-    return /^C[A-Z2-7]{55}$/.test(address) ? address : null;
+    let addressStr = "";
+    try {
+      const addrObj = Address.fromScVal(valScVal);
+      addressStr = addrObj.toString();
+    } catch {
+      const native = scValToNative(valScVal);
+      addressStr = typeof native === "string" ? native : String(native ?? "");
+    }
+
+    return /^C[A-Z2-7]{55}$/.test(addressStr) ? addressStr : null;
   } catch {
     return null;
   }
