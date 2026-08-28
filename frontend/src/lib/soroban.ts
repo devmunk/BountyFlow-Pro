@@ -7,8 +7,9 @@ import {
   scValToNative,
 } from "@stellar/stellar-sdk";
 import { signTransactionXdr } from "./wallet";
-import { humanizeContractError } from "./errors";
+import { humanizeWalletError } from "./errors";
 import type { TxState } from "@/types/bounty";
+
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL!;
 const NETWORK_PASSPHRASE = process.env.NEXT_PUBLIC_NETWORK_PASSPHRASE!;
@@ -139,11 +140,11 @@ export async function invokeContract(opts: {
       result.status === "FAILED" ? "Transaction failed on-chain" : `Unexpected status: ${result.status}`
     );
   } catch (err) {
-    const message = humanizeContractError(err);
-    const hash = (err as { hash?: string })?.hash;
-    onState({ phase: "error", message, hash });
-    throw err;
-  }
+  const message = humanizeWalletError(err);
+  const hash = (err as { hash?: string })?.hash;
+  onState({ phase: "error", message, hash });
+  throw err;
+}
 }
 
 async function pollForConfirmation(

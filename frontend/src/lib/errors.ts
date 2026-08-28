@@ -4,8 +4,7 @@
  * style message reach the UI.
  */
 
-// Mirrors contracts/bounty/src/lib.rs `Error` enum (kept in sync manually;
-// see README "Keeping contract error codes and the frontend in sync").
+// Mirrors contracts/bounty/src/lib.rs `Error` enum
 const BOUNTY_ERROR_MESSAGES: Record<number, string> = {
   1: "This bounty has already been created.",
   2: "This bounty contract has not been initialized yet.",
@@ -32,8 +31,6 @@ const FACTORY_ERROR_MESSAGES: Record<number, string> = {
 };
 
 function extractContractErrorCode(message: string): number | null {
-  // stellar-sdk surfaces contract panics as strings containing
-  // "Error(Contract, #N)" among other diagnostic text.
   const match = message.match(/Error\(Contract, #(\d+)\)/);
   return match ? parseInt(match[1] ?? "", 10) : null;
 }
@@ -64,18 +61,36 @@ export function humanizeWalletError(raw: unknown): string {
   if (message.includes("not installed") || message.includes("not detected")) {
     return "That wallet extension is not installed. Install it and refresh the page.";
   }
-  if (message.includes("rejected") || message.includes("declined") || message.includes("user cancelled") || message.includes("user canceled")) {
-    return "The transaction was cancelled in your wallet.";
+
+  // Covers both connection rejections and transaction signing rejections
+  if (
+    message.includes("transaction signing cancelled") ||
+    message.includes("wallet connection cancelled") ||
+    message.includes("request access first") ||
+    message.includes("not allowed") ||
+    message.includes("declined") ||
+    message.includes("rejected") ||
+    message.includes("cancel") ||
+    message.includes("abort") ||
+    message.includes("closed") ||
+    message.includes("denied") ||
+    message.includes("user declined")
+  ) {
+    return "Transaction signing cancelled.";
   }
+
   if (message.includes("disconnected") || message.includes("no wallet")) {
     return "Your wallet is disconnected. Connect it again to continue.";
   }
+
   if (message.includes("network") && (message.includes("mismatch") || message.includes("wrong"))) {
     return "Your wallet is set to the wrong network. Switch it to Stellar Testnet.";
   }
+
   if (message.includes("account") && message.includes("not found")) {
     return "This account doesn't exist on the network yet. Fund it first.";
   }
+
   return humanizeContractError(raw);
 }
 

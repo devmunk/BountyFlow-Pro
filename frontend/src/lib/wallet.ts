@@ -71,15 +71,16 @@ export async function connectWallet(): Promise<ConnectResult> {
 }
 
 export async function signTransactionXdr(xdr: string): Promise<string> {
-  try {
-    const kit = await getWalletKit();
-    const { signedTxXdr } = await kit.signTransaction(xdr, {
-      networkPassphrase: process.env.NEXT_PUBLIC_NETWORK_PASSPHRASE,
-    });
-    return signedTxXdr;
-  } catch (err) {
-    throw new Error(humanizeWalletError(err));
+  const kit = await getWalletKit();
+  const result = await kit.signTransaction(xdr, {
+    networkPassphrase: process.env.NEXT_PUBLIC_NETWORK_PASSPHRASE,
+  });
+
+  if (!result || !result.signedTxXdr) {
+    throw new Error("Transaction signing cancelled");
   }
+
+  return result.signedTxXdr;
 }
 
 export function disconnectWallet() {

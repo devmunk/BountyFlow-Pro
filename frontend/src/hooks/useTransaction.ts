@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import type { TxState } from "@/types/bounty";
-import { humanizeContractError } from "@/lib/errors";
+import { humanizeWalletError } from "@/lib/errors";
 
 const TERMINAL_PHASES: TxState["phase"][] = ["idle", "success", "error"];
 
@@ -37,7 +37,7 @@ export function useTransaction<TArgs extends unknown[], TResult>(
       } catch (err) {
         const errorState: TxState = {
           phase: "error",
-          message: humanizeContractError(err),
+          message: humanizeWalletError(err),
           hash: "hash" in stateRef.current ? stateRef.current.hash : undefined,
         };
         updateState(errorState);
