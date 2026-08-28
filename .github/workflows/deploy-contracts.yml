@@ -1,0 +1,113 @@
+name: Deploy Contracts
+
+# Manual trigger only — deploying to a live network should always be a
+# deliberate action, never an automatic side effect of a push. This mirrors
+# scripts/deploy.ps1 exactly so local and CI deployments are identical.
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network"
+        required: true
+        default: "testnet"
+        type: choice
+        options:
+          - testnet
+          - futurenet
+
+jobs:
+  deploy:
+    name: Build, test, and deploy contracts
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.network }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install Stellar CLI
+        run: cargo install --locked stellar-cli --version ^22
+
+      - name: Build contracts
+        run: |
+          cd contracts
+          stellar contract build --package bounty
+          stellar contract build --package factory
+          stellar contract optimize --wasm target/wasm32-unknown-unknown/release/bounty.wasm
+          stellar contract optimize --wasm target/wasm32-unknown-unknown/release/factory.wasm
+
+      - name: Run contract tests before deploying
+        run: |
+          cd contracts
+          cargo test --workspace
+
+      - name: Configure deployer identity from secrets
+        env:
+          DEPLOYER_SECRET_KEY: ${{ secrets.DEPLOYER_SECRET_KEY }}
+        run: |
+          stellar keys add ci-deployer --secret-key "$DEPLOYER_SECRET_KEY"
+
+      - name: Install native XLM SAC address for target network
+        id: token
+        run: |
+          TOKEN=$(stellar contract id asset --asset native --network ${{ inputs.network }})
+          echo "address=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Install bounty WASM
+        id: bounty_install
+        run: |
+          HASH=$(stellar contract install \
+            --wasm contracts/target/wasm32-unknown-unknown/release/bounty.optimized.wasm \
+            --source ci-deployer \
+            --network ${{ inputs.network }})
+          echo "hash=$HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy factory contract
+        id: factory_deploy
+        run: |
+          ID=$(stellar contract deploy \
+            --wasm contracts/target/wasm32-unknown-unknown/release/factory.optimized.wasm \
+            --source ci-deployer \
+            --network ${{ inputs.network }})
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+
+      - name: Initialize factory
+        run: |
+          ADMIN=$(stellar keys address ci-deployer)
+          stellar contract invoke \
+            --id ${{ steps.factory_deploy.outputs.id }} \
+            --source ci-deployer \
+            --network ${{ inputs.network }} \
+            -- init \
+            --admin "$ADMIN" \
+            --wasm_hash ${{ steps.bounty_install.outputs.hash }} \
+            --token ${{ steps.token.outputs.address }}
+
+      - name: Record deployment
+        run: |
+          mkdir -p deployments
+          cat > deployments/latest.json << EOF
+          {
+            "network": "${{ inputs.network }}",
+            "deployedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "factoryContractId": "${{ steps.factory_deploy.outputs.id }}",
+            "bountyWasmHash": "${{ steps.bounty_install.outputs.hash }}",
+            "tokenAddress": "${{ steps.token.outputs.address }}"
+          }
+          EOF
+          cat deployments/latest.json
+
+      - name: Upload deployment record as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-${{ inputs.network }}-${{ github.run_number }}
+          path: deployments/latest.json
+
+      # This workflow intentionally does NOT commit deployment output back
+      # to the repo or write frontend/.env.local automatically — updating
+      # Vercel's environment variables with the new contract ID remains a
+      # deliberate follow-up step (see README > Deployment Architecture),
+      # exactly like running scripts/configure-frontend.ps1 locally.

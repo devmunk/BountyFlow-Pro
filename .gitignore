@@ -1,0 +1,39 @@
+# Rust / Soroban
+/target
+**/*.rs.bk
+Cargo.lock.bak
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Env files — never commit real secrets or contract IDs meant per-network
+.env
+.env.local
+.env*.local
+!.env.example
+!frontend/.env.local.example
+
+# Deployment records (contain contract IDs / addresses; safe but noisy)
+deployments/*.json
+!deployments/.gitkeep
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test / coverage output
+coverage/
+frontend/coverage/
