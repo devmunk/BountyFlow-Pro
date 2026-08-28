@@ -6,24 +6,38 @@ import { humanizeWalletError } from "./errors";
 let kitInstance: StellarWalletsKit | null = null;
 
 /**
- * Lazily creates a single shared StellarWalletsKit instance. `allowAllModules()`
- * only surfaces wallets the kit can actually detect/support in the current
- * browser — we never hardcode a wallet list that could advertise something
- * unavailable.
+ * Lazily creates a single shared StellarWalletsKit instance. 
+ * Explicitly instantiates modules for Freighter, xBull, Albedo, and HOT Wallet
+ * to ensure unavailable/unvalidated wallets (Rabet, LOBSTR, Hana, Klever) are excluded.
  */
 export async function getWalletKit(): Promise<StellarWalletsKit> {
   if (typeof window === "undefined") {
     throw new Error("Wallet kit is only available in the browser");
   }
-  const { StellarWalletsKit, WalletNetwork, allowAllModules } = await import("@creit.tech/stellar-wallets-kit");
+  const {
+    StellarWalletsKit,
+    WalletNetwork,
+    FreighterModule,
+    xBullModule,
+    AlbedoModule,
+    HotWalletModule,
+  } = await import("@creit.tech/stellar-wallets-kit");
+
   if (!kitInstance) {
-    const network = process.env.NEXT_PUBLIC_STELLAR_NETWORK === "mainnet"
-      ? WalletNetwork.PUBLIC
-      : WalletNetwork.TESTNET;
+    const network =
+      process.env.NEXT_PUBLIC_STELLAR_NETWORK === "mainnet"
+        ? WalletNetwork.PUBLIC
+        : WalletNetwork.TESTNET;
+
     kitInstance = new StellarWalletsKit({
       network,
       selectedWalletId: undefined,
-      modules: allowAllModules(),
+      modules: [
+        new FreighterModule(),
+        new xBullModule(),
+        new AlbedoModule(),
+        new HotWalletModule(),
+      ],
     });
   }
   return kitInstance;
@@ -78,8 +92,7 @@ export function rememberWallet(walletId: string) {
   try {
     window.localStorage.setItem(STORAGE_KEY, walletId);
   } catch {
-    // localStorage can throw in private-browsing contexts; ignore, this is
-    // a convenience feature only, never load-bearing for correctness.
+    // localStorage can throw in private-browsing contexts; ignore
   }
 }
 
