@@ -9,9 +9,18 @@ import { ActivityFeed } from "@/components/ActivityFeed";
 import { BountyStatus } from "@/types/bounty";
 
 export default function HomePage() {
-  const { bounties, events, loading, error } = useActivity();
+  const {
+    bounties,
+    events,
+    loading,
+    error,
+    refreshEvents,
+    refreshingEvents,
+  } = useActivity();
 
-  const openBounties = bounties.filter((b) => b.status === BountyStatus.Open);
+  const openBounties = bounties.filter(
+    (b) => b.status === BountyStatus.Open,
+  );
 
   return (
     <div className="space-y-10">
@@ -19,13 +28,17 @@ export default function HomePage() {
         <p className="mb-2 font-mono text-xs uppercase tracking-widest text-bf-green-dim">
           Stellar Soroban · Testnet
         </p>
+
         <h1 className="max-w-2xl text-3xl font-bold text-bf-green sm:text-4xl">
           A decentralized bounty marketplace with real, on-chain escrow.
         </h1>
+
         <p className="mt-4 max-w-xl text-sm text-bf-green-muted/70">
-          Post a bounty, escrow the XLM reward on-chain, and pay out automatically
-          the moment you approve the submitted work. No custodians, no IOUs.
+          Post a bounty, escrow the XLM reward on-chain, and pay out
+          automatically the moment you approve the submitted work. No
+          custodians, no IOUs.
         </p>
+
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/create"
@@ -33,6 +46,7 @@ export default function HomePage() {
           >
             Create a Bounty
           </Link>
+
           <Link
             href="/dashboard/developer"
             className="rounded-md border border-bf-border px-5 py-2.5 text-sm font-semibold text-bf-green-muted transition hover:border-bf-green-dim"
@@ -73,11 +87,13 @@ export default function HomePage() {
         </div>
 
         <div>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-bf-green-muted/70">
-            Live Activity
-          </h2>
           <div className="rounded-lg border border-bf-border bg-bf-panel/40 p-3">
-            <ActivityFeed events={events} bounties={bounties} />
+            <ActivityFeed
+              events={events}
+              bounties={bounties}
+              onRefresh={refreshEvents}
+              refreshing={refreshingEvents}
+            />
           </div>
         </div>
       </section>
