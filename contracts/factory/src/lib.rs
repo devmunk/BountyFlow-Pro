@@ -17,8 +17,8 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contracterror, contractevent, contractimpl, contracttype, panic_with_error,
-    Address, BytesN, Env, IntoVal, String, Symbol, Val, Vec,
+    contract, contracterror, contractevent, contractimpl, contracttype, panic_with_error, Address,
+    BytesN, Env, IntoVal, String, Symbol, Val, Vec,
 };
 
 #[contracttype]
@@ -117,11 +117,7 @@ impl FactoryContract {
             .unwrap_or_else(|| panic_with_error!(&env, Error::NotInitialized));
         let token: Address = env.storage().instance().get(&DataKey::Token).unwrap();
 
-        let next_id: u64 = env
-            .storage()
-            .instance()
-            .get(&DataKey::NextId)
-            .unwrap_or(0);
+        let next_id: u64 = env.storage().instance().get(&DataKey::NextId).unwrap_or(0);
 
         // A unique, deterministic salt per bounty id
         let salt = BytesN::from_array(&env, &Self::salt_from_id(next_id));

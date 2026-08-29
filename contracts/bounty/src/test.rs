@@ -4,7 +4,14 @@ use super::*;
 use soroban_sdk::testutils::{Address as _, Ledger, LedgerInfo};
 use soroban_sdk::{token, Env, String as SorobanString};
 
-fn setup(env: &Env) -> (Address, Address, token::Client<'static>, token::StellarAssetClient<'static>) {
+fn setup(
+    env: &Env,
+) -> (
+    Address,
+    Address,
+    token::Client<'static>,
+    token::StellarAssetClient<'static>,
+) {
     let admin = Address::generate(env);
     let sac = env.register_stellar_asset_contract_v2(admin.clone());
     let token_client = token::Client::new(env, &sac.address());
@@ -50,7 +57,15 @@ fn test_create_and_fund_lifecycle() {
     asset_client.mint(&creator, &100_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 10_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        10_0000000,
+        0,
+    );
 
     let client = BountyContractClient::new(&env, &bounty_id);
     assert_eq!(client.status(), Status::Created);
@@ -88,7 +103,15 @@ fn test_reward_cannot_be_released_twice() {
     asset_client.mint(&creator, &50_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 5_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        5_0000000,
+        0,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();
@@ -118,7 +141,15 @@ fn test_cannot_claim_already_claimed_bounty() {
     asset_client.mint(&creator, &50_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 5_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        5_0000000,
+        0,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();
@@ -141,7 +172,15 @@ fn test_only_claimant_can_submit() {
     asset_client.mint(&creator, &50_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 5_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        5_0000000,
+        0,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();
@@ -171,7 +210,15 @@ fn test_only_creator_can_approve() {
     asset_client.mint(&creator, &50_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 5_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        5_0000000,
+        0,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();
@@ -197,7 +244,15 @@ fn test_cancel_refunds_creator_when_open() {
     asset_client.mint(&creator, &50_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 20_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        20_0000000,
+        0,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();
@@ -221,7 +276,15 @@ fn test_cannot_cancel_after_submission() {
     asset_client.mint(&creator, &50_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 20_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        20_0000000,
+        0,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();
@@ -249,7 +312,15 @@ fn test_claim_timeout_allows_refund() {
 
     let bounty_id = deploy_bounty(&env);
     // 1 hour claim timeout
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 20_0000000, 3600);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        20_0000000,
+        3600,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();
@@ -311,7 +382,15 @@ fn test_cannot_double_fund() {
     asset_client.mint(&creator, &50_0000000);
 
     let bounty_id = deploy_bounty(&env);
-    init_bounty(&env, &bounty_id, &factory, &creator, &token_addr, 10_0000000, 0);
+    init_bounty(
+        &env,
+        &bounty_id,
+        &factory,
+        &creator,
+        &token_addr,
+        10_0000000,
+        0,
+    );
     let client = BountyContractClient::new(&env, &bounty_id);
 
     client.fund();

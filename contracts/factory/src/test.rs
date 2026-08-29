@@ -11,12 +11,16 @@ use soroban_sdk::{token, Env, String as SorobanString};
 //   stellar contract build --package bounty
 //   cargo test -p factory
 mod bounty_wasm {
-    soroban_sdk::contractimport!(
-        file = "../target/wasm32v1-none/release/bounty.wasm"
-    );
+    soroban_sdk::contractimport!(file = "../target/wasm32v1-none/release/bounty.wasm");
 }
 
-fn setup_token(env: &Env) -> (Address, token::Client<'static>, token::StellarAssetClient<'static>) {
+fn setup_token(
+    env: &Env,
+) -> (
+    Address,
+    token::Client<'static>,
+    token::StellarAssetClient<'static>,
+) {
     let admin = Address::generate(env);
     let sac = env.register_stellar_asset_contract_v2(admin);
     (
@@ -56,10 +60,7 @@ fn test_create_bounty_deploys_and_registers() {
     );
 
     assert_eq!(bounty_id, 0);
-    assert_eq!(
-        factory_client.get_bounty_address(&bounty_id),
-        bounty_addr
-    );
+    assert_eq!(factory_client.get_bounty_address(&bounty_id), bounty_addr);
 
     let all_ids = factory_client.get_all_bounty_ids();
     assert_eq!(all_ids.len(), 1);
