@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useCallback, useContext } from "react";
 import { useBounties } from "@/hooks/useBounties";
 import { useBountyEvents } from "@/hooks/useBountyEvents";
 import type { Bounty, BountyEvent } from "@/types/bounty";
@@ -22,11 +22,17 @@ export function ActivityProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { bounties, loading, error, refreshOne } = useBounties();
+  const {
+    bounties,
+    loading,
+    error,
+    refresh,
+    refreshOne,
+  } = useBounties();
 
   const {
     feed: events,
-    refresh: refreshEvents,
+    refresh: refreshEventStream,
     refreshing: refreshingEvents,
   } = useBountyEvents(
     (bountyAddress) => {
@@ -40,6 +46,19 @@ export function ActivityProvider({
     },
     bounties.map((bounty) => bounty.contractAddress),
   );
+
+  /**
+   * Manual refresh:
+   * 1. Refresh the complete bounty list so newly created bounties
+   *    and their titles become available immediately.
+   * 2. Refresh the event stream so newly indexed events appear.
+   */
+  const refreshEvents = useCallback(async () => {
+    await Promise.all([
+      refresh(),
+      refreshEventStream(),
+    ]);
+  }, [refresh, refreshEventStream]);
 
   return (
     <ActivityContext.Provider
