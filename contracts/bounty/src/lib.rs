@@ -26,6 +26,7 @@
 //! checks-effects-interactions ordering).
 
 #![no_std]
+#![allow(clippy::too_many_arguments)]
 
 use soroban_sdk::{
     contract, contracterror, contractevent, contractimpl, contracttype, panic_with_error, token,
@@ -198,10 +199,10 @@ impl BountyContract {
         if reward <= 0 {
             panic_with_error!(&env, Error::InvalidReward);
         }
-        if title.len() == 0 {
+        if title.is_empty() {
             panic_with_error!(&env, Error::EmptyTitle);
         }
-        if description.len() == 0 {
+        if description.is_empty() {
             panic_with_error!(&env, Error::EmptyDescription);
         }
 
@@ -295,7 +296,7 @@ impl BountyContract {
             Some(c) if c == &claimant => {}
             _ => panic_with_error!(&env, Error::NotClaimant),
         }
-        if description.len() == 0 {
+        if description.is_empty() {
             panic_with_error!(&env, Error::EmptySubmission);
         }
 

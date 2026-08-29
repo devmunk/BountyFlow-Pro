@@ -1,3 +1,4 @@
+#![allow(deprecated)]
 #![cfg(test)]
 
 use super::*;
