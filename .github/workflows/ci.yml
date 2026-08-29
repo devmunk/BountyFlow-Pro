@@ -13,29 +13,21 @@ jobs:
   contracts:
     name: Smart Contracts (build + test)
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: wasm32-unknown-unknown
-
-      - name: Cache cargo registry and target dir
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
+          targets: wasm32v1-none
 
       - name: Install Stellar CLI
-        run: cargo install --locked stellar-cli --version ^22 || true
+        uses: stellar/stellar-cli-action@main
+        with:
+          version: "26.0.0"
 
-      - name: Build bounty contract to WASM (required before factory tests)
+      - name: Build bounty contract to WASM
         run: |
           cd contracts
           stellar contract build --package bounty
@@ -58,9 +50,11 @@ jobs:
   frontend:
     name: Frontend (lint + typecheck + test + build)
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: frontend
+
     steps:
       - uses: actions/checkout@v4
 
@@ -86,9 +80,6 @@ jobs:
       - name: Production build
         run: npm run build
         env:
-          # CI builds with placeholder values; real values are injected by
-          # Vercel project environment variables at deploy time, never
-          # committed here. See README > Environment Variables.
           NEXT_PUBLIC_STELLAR_NETWORK: testnet
           NEXT_PUBLIC_SOROBAN_RPC_URL: https://soroban-testnet.stellar.org
           NEXT_PUBLIC_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
