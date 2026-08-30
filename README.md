@@ -123,7 +123,7 @@ Explorer:         https://stellar.expert/explorer/testnet/tx/17de72a756e66a03544
 ### Live Demo
 
 ```text
-https://youtu.be/l8Ww8Yey8JE?si=3icb8RNDa9lZFAW-
+
 ```
 
 ### Demo Video
@@ -131,7 +131,7 @@ https://youtu.be/l8Ww8Yey8JE?si=3icb8RNDa9lZFAW-
 1–2 minute demonstration:
 
 ```text
-<DEMO_VIDEO_URL>
+https://youtu.be/l8Ww8Yey8JE?si=3icb8RNDa9lZFAW-
 ```
 
 Recommended flow:

@@ -146,6 +146,13 @@ export async function connectWallet(): Promise<ConnectResult> {
               );
             }
 
+            // IMPORTANT:
+            // Freighter was connected directly through freighter-api above,
+            // so explicitly tell Stellar Wallets Kit which wallet is active.
+            // Without this, the first transaction can fail until a page reload
+            // triggers WalletProvider's remembered-wallet reconnect logic.
+            kit.setWallet(option.id);
+
             succeed({
               address,
               walletId: option.id,
