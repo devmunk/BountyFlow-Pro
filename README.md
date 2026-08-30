@@ -23,12 +23,12 @@ BountyFlow Pro is the **Level 3 evolution of BountyFlow**. It uses Soroban contr
 - [Screenshots](#-screenshots)
 - [Deployed Contracts](#-deployed-contracts)
 - [Features](#-features)
-- [Architecture](#-architecture)
+- [Architecture](#architecture)
 - [Smart Contracts](#-smart-contracts)
 - [Escrow and Payment Flow](#-escrow-and-payment-flow)
 - [Events and Live Activity](#-events-and-live-activity)
 - [Wallet and Transaction Architecture](#-wallet-and-transaction-architecture)
-- [Technology Stack](#-technology-stack)
+- [Technology Stack](#technology-stack)
 - [Repository Structure](#-repository-structure)
 - [Setup and Deployment](#-setup-and-deployment)
 - [Testing and CI/CD](#-testing-and-cicd)
@@ -198,7 +198,7 @@ It tracks:
 > 🧠 **State synchronization:** Events are used as change signals, while direct contract reads remain authoritative for the current bounty state.
 
 ---
-
+<a name="architecture"></a>
 ## 🏗️ Architecture
 
 BountyFlow Pro intentionally has no application backend or database.
@@ -455,7 +455,7 @@ A submitted hash is not treated as success. The UI waits for confirmed Soroban s
 `useTransaction` also prevents duplicate submissions and keeps wallet-dependent actions using the current connected wallet state.
 
 ---
-
+<a name="technology-stack"></a>
 ## 🛠️ Technology Stack
 
 | Layer                   | Technology                                |
