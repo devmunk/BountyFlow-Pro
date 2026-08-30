@@ -1,109 +1,121 @@
-# BountyFlow Pro
+# 🌟 BountyFlow Pro
 
-A decentralized bounty marketplace built on **Stellar Soroban**, where bounty rewards are held in real on-chain escrow and released by the smart contract when the creator approves completed work.
+> 🚀 A decentralized bounty marketplace built on **Stellar Soroban**, with real XLM escrow, on-chain bounty state, wallet integration, and automated smart-contract workflows.
 
 BountyFlow Pro is the **Level 3 evolution of BountyFlow**. It uses Soroban contracts and the Stellar Asset Contract (SAC) for real XLM movement on Stellar Testnet.
 
 ---
 
-## Contents
+## 🌐 Live Demo
 
-- [What BountyFlow Pro Does](#what-bountyflow-pro-does)
-- [Screenshots and Demo](#screenshots-and-demo)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Smart Contracts](#smart-contracts)
-- [Escrow and Payment Flow](#escrow-and-payment-flow)
-- [Events and Live Activity](#events-and-live-activity)
-- [Wallet and Transaction Architecture](#wallet-and-transaction-architecture)
-- [Technology Stack](#technology-stack)
-- [Repository Structure](#repository-structure)
-- [Setup and Deployment](#setup-and-deployment)
-- [Testing and CI/CD](#testing-and-cicd)
-- [Security](#security)
-- [Level 3 Scope](#level-3-scope)
+🔗 **[Launch BountyFlow Pro](https://bounty-flow-pro.vercel.app/)**
+
+🎥 **[Watch the Demo Video](https://youtu.be/l8Ww8Yey8JE?si=3icb8RNDa9lZFAW-)**
+
+> 💡 Connect your Stellar wallet and experience the complete bounty lifecycle:
+> **Create → Fund → Claim → Submit → Approve → Release**
 
 ---
 
-## What BountyFlow Pro Does
+## 📑 Contents
+
+- [What BountyFlow Pro Does](#-what-bountyflow-pro-does)
+- [Screenshots](#-screenshots)
+- [Deployed Contracts](#-deployed-contracts)
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Smart Contracts](#-smart-contracts)
+- [Escrow and Payment Flow](#-escrow-and-payment-flow)
+- [Events and Live Activity](#-events-and-live-activity)
+- [Wallet and Transaction Architecture](#-wallet-and-transaction-architecture)
+- [Technology Stack](#-technology-stack)
+- [Repository Structure](#-repository-structure)
+- [Setup and Deployment](#-setup-and-deployment)
+- [Testing and CI/CD](#-testing-and-cicd)
+- [Security](#-security)
+- [Level 3 Scope](#-level-3-scope)
+
+---
+
+## 🎯 What BountyFlow Pro Does
 
 BountyFlow Pro connects two roles.
 
-### Creator
+### 👤 Creator
 
 A creator can:
 
-1. Connect a supported Stellar wallet.
-2. Create a bounty with a title, description, XLM reward, and claim timeout.
-3. Deploy a dedicated bounty contract through the factory.
-4. Fund the bounty's escrow with real XLM.
-5. Review submitted work.
-6. Approve completed work.
-7. Release the escrowed reward to the developer.
-8. Cancel/refund a bounty when the contract rules permit it.
+1. 🔗 Connect a supported Stellar wallet.
+2. 📝 Create a bounty with a title, description, XLM reward, and claim timeout.
+3. 🏭 Deploy a dedicated bounty contract through the factory.
+4. 💰 Fund the bounty's escrow with real XLM.
+5. 📋 Review submitted work.
+6. ✅ Approve completed work.
+7. 💸 Release the escrowed reward to the developer.
+8. ↩️ Cancel or refund a bounty when permitted by the contract rules.
 
-### Developer
+### 👨‍💻 Developer
 
 A developer can:
 
-1. Connect a supported Stellar wallet.
-2. Browse open bounties.
-3. Claim an open bounty.
-4. Submit completed work with a description and optional link.
-5. Track the bounty's on-chain state.
-6. Receive the escrowed reward after creator approval.
+1. 🔗 Connect a supported Stellar wallet.
+2. 🔎 Browse available bounties.
+3. 🎯 Claim an open bounty.
+4. 📤 Submit completed work with a description and optional link.
+5. 📊 Track the bounty's on-chain state.
+6. 💰 Receive the escrowed reward after creator approval.
 
-There is **no custodial backend holding rewards**. Each bounty contract owns its escrowed XLM.
+> 🔐 **Non-custodial:** BountyFlow Pro does not use a backend to hold rewards. Each bounty contract owns and controls its escrowed XLM according to the on-chain contract rules.
 
 ---
 
-### Screenshots
+## 📸 Screenshots
 
-#### Bounty Board
+### Bounty Board
 
 ![Bounty Board](docs/screenshots/bounty-board.png)
 
-#### Create Bounty
+### Create Bounty
 
 ![Create Bounty](docs/screenshots/create-bounty.png)
 
-#### Bounty Detail
+### Bounty Detail
 
 ![Bounty Detail](docs/screenshots/bounty-detail.png)
 
-#### Creator Dashboard
+### Creator Dashboard
 
 ![Creator Dashboard](docs/screenshots/creator-dashboard.png)
 
-#### Developer Dashboard
+### Developer Dashboard
 
 ![Developer Dashboard](docs/screenshots/developer-dashboard.png)
 
-#### Live Activity
+### Live Activity
 
 ![Live Activity](docs/screenshots/live-activity.png)
 
-#### Mobile Responsive UI
+### Mobile Responsive UI
 
 ![Mobile Responsive UI](docs/screenshots/mobile-responsive.png)
 
-#### Transaction Lifecycle
+### Transaction Lifecycle
 
 ![Transaction Lifecycle](docs/screenshots/transaction-lifecycle.png)
 
-#### CI/CD Pipeline
+### CI/CD Pipeline
 
 ![CI/CD Pipeline](docs/screenshots/ci-pipeline.png)
 
-#### Test Output
+### Test Output
 
 ![Test Output](docs/screenshots/test-output.png)
 
 ---
 
-### Deployed Contracts
+## 📜 Deployed Contracts
 
-Replace these placeholders with the actual Testnet addresses:
+All contracts below are deployed on **Stellar Testnet**:
 
 ```text
 Factory:         CCPJGZQIR2WFJRBU5MCWLM4QIGGXWL7D3UMMWYIQ4FL7QDLKRJOXCDMB
@@ -111,108 +123,83 @@ Bounty:          CC7MOHS5SFN3SM3F6YP5QOGBDNFGNPSX33ZIHMSPLIML3MGRSTQFUZ2B
 Native XLM SAC:  CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
 ```
 
-### Sample Transaction
+### 🔗 Sample Transaction
 
-Use a real successful contract interaction:
-
-```text
-Transaction hash: 17de72a756e66a0354402320b0936bafec0c957fdc9c040fbe7facda6ccf42ea
-Explorer:         https://stellar.expert/explorer/testnet/tx/17de72a756e66a0354402320b0936bafec0c957fdc9c040fbe7facda6ccf42ea
-```
-
-### Live Demo
+A successful on-chain contract interaction on **Stellar Testnet**:
 
 ```text
-
+Transaction hash:
+17de72a756e66a0354402320b0936bafec0c957fdc9c040fbe7facda6ccf42ea
 ```
-
-### Demo Video
-
-1–2 minute demonstration:
-
-```text
-https://youtu.be/l8Ww8Yey8JE?si=3icb8RNDa9lZFAW-
-```
-
-Recommended flow:
-
-```text
-Connect
-  → Create bounty
-  → Fund
-  → Claim
-  → Submit work
-  → Approve
-  → Release reward
-  → Live Activity
-```
+Explorer:
+https://stellar.expert/explorer/testnet/tx/17de72a756e66a0354402320b0936bafec0c957fdc9c040fbe7facda6ccf42ea
 
 ---
 
-## Features
+## ✨ Features
 
-### Marketplace
+### 🏪 Marketplace
 
-- Open bounty board
-- Individual bounty detail pages
-- Creator dashboard
-- Developer dashboard
-- Responsive dark interface
-- Loading, empty, error, and transaction states
+- 📋 Open bounty board
+- 🔎 Individual bounty detail pages
+- 👤 Creator dashboard
+- 👨‍💻 Developer dashboard
+- 📱 Responsive dark interface
+- 🔄 Loading, empty, error, and transaction states
 
-### Creator workflow
+### 👤 Creator Workflow
 
-- Wallet connection
-- Bounty creation
-- On-chain bounty deployment
-- XLM escrow funding
-- Submission review
-- Approval and automatic reward release
-- Refund/cancellation when allowed
+- 🔗 Wallet connection
+- 📝 Bounty creation
+- 🏭 On-chain bounty deployment
+- 💰 XLM escrow funding
+- 📋 Submission review
+- ✅ Approval and automatic reward release
+- ↩️ Refund/cancellation when allowed
 
-### Developer workflow
+### 👨‍💻 Developer Workflow
 
-- Browse open bounties
-- Claim
-- Submit work
-- View current bounty status
-- Receive payment after approval
+- 🔎 Browse open bounties
+- 🎯 Claim bounties
+- 📤 Submit completed work
+- 📊 View current bounty status
+- 💰 Receive payment after approval
 
-### Wallets
+### 👛 Supported Wallets
 
-The frontend uses **Stellar Wallets Kit** with:
+The frontend uses Stellar Wallets Kit with:
 
-- Freighter
-- xBull
-- Albedo
+- 🦊 Freighter
+- 🐂 xBull
+- 🔐 Albedo
 
 Wallet state is shared through `WalletProvider` and `useWallet`. The selected wallet ID is remembered locally so the application can attempt a reconnect when appropriate.
 
 Wallet and transaction cancellation errors are normalized into user-facing messages.
 
-### Live Activity
+### ⚡ Live Activity
 
-The Live Activity feed is backed directly by Soroban RPC events.
+The Live Activity feed is backed directly by **Soroban RPC events**, providing a near-real-time view of bounty activity.
 
-It supports:
+It tracks:
 
-- Bounty creation
-- Funding
-- Claim
-- Work submission
-- Approval
-- Reward release
-- Refund
-- Automatic polling
-- Event de-duplication
-- Manual refresh
-- Re-fetching affected bounty data
+- 🆕 Bounty creation
+- 💰 Funding
+- 🎯 Claim
+- 📤 Work submission
+- ✅ Approval
+- 💸 Reward release
+- ↩️ Refund
+- 🔄 Automatic polling
+- 🧹 Event de-duplication
+- 🔃 Manual refresh
+- 📊 Re-fetching of affected bounty data
 
-Events are used as change signals; contract reads remain authoritative for current bounty state.
+> 🧠 **State synchronization:** Events are used as change signals, while direct contract reads remain authoritative for the current bounty state.
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 BountyFlow Pro intentionally has no application backend or database.
 
@@ -270,34 +257,34 @@ The blockchain is the source of truth:
 
 ---
 
-## Smart Contracts
+## 📜 Smart Contracts
 
-### Factory contract
+### 🏭 Factory Contract
 
 `contracts/factory/`
 
-- Stores the bounty WASM hash and native XLM SAC address.
-- Deploys and initializes a new bounty contract for every bounty.
-- Maintains bounty ID → contract address.
-- Maintains creator → bounty IDs.
-- Can update the WASM hash used for **future** bounties.
+- 🧬 Stores the bounty WASM hash and native XLM SAC address.
+- 🚀 Deploys and initializes a new bounty contract for every bounty.
+- 🗂️ Maintains the mapping of bounty IDs to contract addresses.
+- 👤 Maintains creator-to-bounty ID mappings.
+- 🔄 Can update the WASM hash used for **future** bounties.
 
-### Bounty contract
+### 💼 Bounty Contract
 
 `contracts/bounty/`
 
-- One independent contract instance per bounty.
-- Stores creator, claimant, reward, metadata, submission, timeout, state, and token.
-- Its own contract address holds the escrowed XLM.
-- Enforces authorization and valid state transitions on-chain.
+- 1️⃣ One independent contract instance per bounty.
+- 🗃️ Stores the creator, claimant, reward, metadata, submission, timeout, state, and token.
+- 💰 Its own contract address holds the escrowed XLM.
+- 🔐 Enforces authorization and valid state transitions on-chain.
 
-This isolates escrow between bounties and demonstrates Soroban inter-contract communication.
+> 🧩 **Contract isolation:** Each bounty has its own contract instance and escrow, while the Factory coordinates deployment and registration. This demonstrates Soroban inter-contract communication and keeps bounty funds isolated from other bounties.
 
 ---
 
-## Escrow and Payment Flow
+## 💰 Escrow and Payment Flow
 
-### Creation and funding
+### 📝 Creation and Funding
 
 ```text
 Creator
@@ -324,7 +311,7 @@ Factory
           Open
 ```
 
-### Claim and submission
+### 🎯 Claim and Submission
 
 ```text
 Developer
@@ -338,7 +325,7 @@ Developer
  Submitted
 ```
 
-### Approval and payout
+### ✅ Approval and Payout
 
 ```text
 Creator
@@ -354,7 +341,7 @@ Bounty Contract
                   Developer receives XLM
 ```
 
-### Refund
+### ↩️ Refund
 
 ```text
 Creator
@@ -371,7 +358,7 @@ The escrow is therefore a verifiable on-chain balance at the bounty contract add
 
 ---
 
-## Events and Live Activity
+## ⚡ Events and Live Activity
 
 Contracts emit typed events for state-changing actions:
 
@@ -395,15 +382,16 @@ frontend/src/components/ActivityFeed.tsx
 
 The event subscription:
 
-- Watches the factory contract.
-- Watches relevant bounty contract addresses.
-- Polls Soroban RPC approximately every 6 seconds.
-- Starts with a 1000-ledger lookback.
-- Chunks watched contract IDs into groups of at most 5.
-- Requests up to 100 events per poll.
-- Keeps a bounded in-memory feed.
-- De-duplicates events using `ledger:eventId`.
-- Cleans up its timer when the React effect is removed.
+- 🏭 Watches the Factory contract.
+- 📜 Watches relevant bounty contract addresses.
+- 🔄 Polls Soroban RPC approximately every 6 seconds.
+- 🔍 Starts with a 1000-ledger lookback.
+- 📦 Chunks watched contract IDs into groups of at most 5.
+- 📥 Requests up to 100 events per poll.
+- 🧠 Keeps a bounded in-memory activity feed.
+- 🧹 De-duplicates events using ledger:eventId.
+- 🛑 Cleans up its polling timer when the React effect is removed.
+- 🔃 Allows Manual Refresh to trigger an immediate poll.
 
 Manual Refresh asks the existing subscription to poll immediately.
 
@@ -411,9 +399,9 @@ A newly created bounty can briefly appear as **Unknown bounty** because the even
 
 ---
 
-## Wallet and Transaction Architecture
+## 👛 Wallet and Transaction Architecture
 
-### Wallet
+### 🔗 Wallet Integration
 
 Wallet integration is split between:
 
@@ -425,13 +413,13 @@ frontend/src/hooks/useWallet.ts
 
 The application uses:
 
-- Freighter
-- xBull
-- Albedo
+- 🦊 Freighter
+- 🐂 xBull
+- 🔐 Albedo
 
 `WalletProvider` shares the current wallet address, wallet name, connection state, errors, and connect/disconnect actions across the application.
 
-### Transactions
+### 🔄 Transactions
 
 Transactions use:
 
@@ -468,27 +456,28 @@ A submitted hash is not treated as success. The UI waits for confirmed Soroban s
 
 ---
 
-## Technology Stack
+## 🛠️ Technology Stack
 
-| Layer | Technology |
-|---|---|
-| Smart contracts | Rust + `soroban-sdk` |
-| Blockchain | Stellar Soroban Testnet |
-| Reward asset | Native XLM through Stellar Asset Contract |
-| Frontend | Next.js 14 App Router |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| Wallet integration | `@creit.tech/stellar-wallets-kit` |
-| Stellar client | `@stellar/stellar-sdk` |
-| Frontend tests | Vitest + Testing Library |
-| Contract tests | Rust / Cargo tests |
-| CI/CD | GitHub Actions |
-| Deployment scripting | PowerShell |
-| Backend/database | None |
+| Layer                   | Technology                                |
+| ----------------------- | ----------------------------------------- |
+| 📜 Smart contracts      | Rust + `soroban-sdk`                      |
+| ⛓️ Blockchain           | Stellar Soroban Testnet                   |
+| 💰 Reward asset         | Native XLM through Stellar Asset Contract |
+| 🖥️ Frontend            | Next.js 14 App Router                     |
+| 📘 Language             | TypeScript                                |
+| 🎨 Styling              | Tailwind CSS                              |
+| 👛 Wallet integration   | `@creit.tech/stellar-wallets-kit`         |
+| 🔗 Stellar client       | `@stellar/stellar-sdk`                    |
+| 🧪 Frontend tests       | Vitest + Testing Library                  |
+| 🧪 Contract tests       | Rust / Cargo tests                        |
+| ⚙️ CI/CD                | GitHub Actions                            |
+| 🪟 Deployment scripting | PowerShell                                |
+| 🚫 Backend/database     | None                                      |
+
 
 ---
 
-## Repository Structure
+## 📁 Repository Structure
 
 ```text
 BountyFlow-Pro/
@@ -533,9 +522,9 @@ BountyFlow-Pro/
 
 ---
 
-## Setup and Deployment
+## 🚀 Setup and Deployment
 
-### Prerequisites
+### 📋 Prerequisites
 
 - Node.js 20+
 - Rust
@@ -551,7 +540,7 @@ Install the required Rust WASM target:
 rustup target add wasm32v1-none
 ```
 
-### Frontend
+### 🖥️ Frontend
 
 ```powershell
 cd frontend
@@ -566,7 +555,7 @@ npm run typecheck
 npm run build
 ```
 
-### Environment
+### 🔐 Environment Variables
 
 The frontend uses:
 
@@ -581,7 +570,7 @@ NEXT_PUBLIC_DEFAULT_CLAIM_TIMEOUT_SECS
 
 `DEPLOYER_SECRET_KEY` is deployment-only and must never be a `NEXT_PUBLIC_*` variable.
 
-### Contract deployment
+### 🚀 Contract Deployment
 
 ```powershell
 ./scripts/deploy-all.ps1 -IdentityName bountyflow-deployer -Network testnet
@@ -600,13 +589,13 @@ Deployment writes contract information to `deployments/latest.json`.
 
 When bounty WASM is upgraded, existing bounty instances keep their current implementation; the factory's new WASM hash applies to future bounties.
 
-### Frontend deployment
+### 🌐 Frontend Deployment
 
 Deploy `frontend/` using the standard Next.js/Vercel configuration and provide the required public environment variables.
 
 ---
 
-## Testing and CI/CD
+## 🧪 Testing and CI/CD
 
 ### Contracts
 
@@ -627,57 +616,66 @@ npm run build
 
 Frontend tests cover validation, error handling, UI rendering, transaction lifecycle, and duplicate submission protection.
 
-### CI/CD
+### ⚙️ CI/CD
 
-GitHub Actions runs the contract and frontend validation pipeline, including build/test/typecheck/lint checks. Contract deployment is available through the deployment workflow.
+GitHub Actions automatically validates the project on pushes and pull requests to main.
 
-For submission evidence, add a screenshot of a **successful CI pipeline** to:
+The CI pipeline includes:
 
-```text
-docs/screenshots/ci-pipeline.png
-```
+- 🦀 Smart contract build
+- 🧪 Smart contract tests
+- 🎨 Rust formatting checks
+- 🔍 Clippy linting
+- 📦 Frontend dependency installation
+- 🧹 Frontend linting
+- 🔎 Type checking
+- 🧪 Frontend tests
+- 🏗️ Production build
 
-Add test output showing **3+ passing tests** to:
+✅ CI Evidence
 
-```text
-docs/screenshots/test-output.png
-```
+![Successful CI Pipeline](docs/screenshots/ci-pipeline.png)
 
----
+🧪 Test Evidence
 
-## Security
-
-- **Authorization is enforced on-chain.** Frontend role checks are UX only.
-- **Escrow is isolated.** Each bounty owns its own XLM balance.
-- **No generic withdrawal** is provided.
-- **State changes occur before transfers** on payout/refund paths.
-- **Rewards are validated on-chain** to be positive.
-- **Secrets are not committed** or exposed through public environment variables.
-- **Wallet and contract errors are sanitized** before reaching the UI.
+![Contract Test Output](docs/screenshots/test-output.png)
 
 ---
 
-## Level 3 Scope
+## 🔐 Security
+
+- 🔒 Authorization is enforced on-chain. Frontend role checks are used only for UX.
+- 💰 Escrow is isolated. Each bounty contract owns its own XLM balance.
+- 🚫 No generic withdrawal function is provided.
+- 🔄 State changes occur before transfers on payout and refund paths.
+- 💵 Rewards are validated on-chain to be positive.
+- 🔑 Secrets are not committed or exposed through public environment variables.
+- 🛡️ Wallet and contract errors are sanitized before reaching the UI.
+
+---
+
+## 🏆 Level 3 Scope
 
 BountyFlow Pro demonstrates:
 
-- Advanced Soroban smart contracts
-- Inter-contract communication
-- Real XLM escrow
-- On-chain state machines
-- Typed blockchain events
-- Event polling and live activity updates
-- Shared wallet state
-- Transaction lifecycle handling
-- Error and loading states
-- Contract and frontend tests
-- CI/CD
-- Scripted smart-contract deployment
-- Responsive Next.js frontend
-- Production-oriented project structure
+- 📜 Advanced Soroban smart contracts
+- 🔗 Inter-contract communication
+- 💰 Real XLM escrow
+- 🔄 On-chain state machines
+- ⚡ Typed blockchain events
+- 📡 Event polling and live activity updates
+- 👛 Shared wallet state
+- 🔄 Transaction lifecycle handling
+- ⚠️ Error and loading states
+- 🧪 Contract and frontend tests
+- ⚙️ CI/CD
+- 🚀 Scripted smart-contract deployment
+- 🌐 Production Next.js frontend
+- 📱 Responsive interface
+- 🏗️ Production-oriented project structure
 
 ---
 
-## License
+## 📄 License
 
-Add the project's chosen license here before public distribution.
+This project is currently provided without a separate open-source license.
